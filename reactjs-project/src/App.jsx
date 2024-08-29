@@ -7,7 +7,7 @@ function App() {
   const apiUrl = import.meta.env.VITE_API_URL;
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(5)
+  const [limit, setLimit] = useState(8)
   // const apiUrlPagination = import.meta.env.VITE_API_URL + `?_page=${page}&_limit=${limit}`
 
   useEffect(() => {
@@ -24,6 +24,20 @@ function App() {
     fetchPosts();
   }, []);
 
+  useEffect(() => {
+    const checkPage = async () => {
+      try {
+        if (page < 1) {
+          setPage(1)
+        }
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
+    };
+
+    checkPage();
+  }, [page]);
+
 
   const indexOfLastPost = page * limit;
   const indexOfFirstPost = indexOfLastPost - limit;
@@ -31,7 +45,7 @@ function App() {
 
   const paginate = (pageNumber) => {
     setPage(pageNumber);
-    console.log(pageNumber)
+    // console.log(pageNumber)
   }
 
   const pageNumbers = [];
@@ -71,11 +85,15 @@ function App() {
 
           <div class="center">
             <div class="pagination">
-              <a onClick={() => paginate(page - 1)} href="#">&laquo;</a>
+              {page > 1 && (
+                <a onClick={() => paginate(page - 1)} href={'#'}>&laquo;</a>
+              )}
               {pageNumbers.map(number => (
                 <a key={number} onClick={() => paginate(number)} href="#" class={number == page ? 'active' : ''}>{number}</a>
               ))}
-              <a onClick={() => paginate(page + 1)} href="#">&raquo;</a>
+              {page < pageNumbers[pageNumbers.length - 1] && (
+                <a onClick={() => paginate(page + 1)} href="#">&raquo;</a>
+              )}
             </div>
           </div>
         </div>
